@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="filespire - Simplify your file sharing and shorten URLs effortlessly." />
+  <meta name="keywords" content="filetranfer,filespire URL Shortener, QR Code" />
+  <meta name="author" content="Vinay Kumar" />
+  <title>filespire - URL Shortener</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" />
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(120deg, #1e3c72, #2a5298);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav {
+      background: #1e3c72;
+      padding: 15px;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    nav .navbar-nav .nav-link:hover {
+      color: #00ffcc;
+    }
+
+    main {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 85vh;
+    }
+
+    .url-shortener {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .url-shortener h1 {
+      margin-bottom: 20px;
+    }
+
+    .url-shortener input {
+      width: 80%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .url-shortener button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: #00b4d8;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .url-shortener button:hover {
+      background: #0077b6;
+    }
+
+    .shortened-section {
+      margin-top: 20px;
+    }
+
+    .shortened-section a {
+      color: #00ffcc;
+      font-size: 1.2rem;
+      text-decoration: none;
+      word-wrap: break-word;
+    }
+
+    #qrcode {
+      margin-top: 20px;
+    }
+
+    #downloadQRBtn {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: #00b4d8;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #downloadQRBtn:hover {
+      background: #0077b6;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px 0;
+      background: #1e3c72;
+    }
+
+    footer p {
+      color: #fff;
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">filespire</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/about">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/features">Features</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="contact">Contact</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="login">Login</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main>
+    <div class="url-shortener">
+      <h1>Shorten Your URL</h1>
+      <input type="url" id="originalURL" placeholder="Enter your URL here" />
+      <button id="shortenBtn" onclick="shortenURL()">Shorten</button>
+      <div id="shortenedURL" class="shortened-section" style="display: none">
+        <p>Your shortened URL:</p>
+        <a href="#" id="shortURL" target="_blank"></a>
+        <div id="qrcode"></div>
+        <button id="downloadQRBtn" onclick="downloadQRCode()">
+          Download QR Code
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 filespire. All rights reserved.</p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+  <script>
+    function shortenURL() {
+      const shortenBtn = document.getElementById("shortenBtn");
+      shortenBtn.disabled = true;
+      shortenBtn.textContent = "Shortening...";
+
+      const originalURL = document.getElementById("originalURL").value;
+
+      const data = {
+        domain: "filespire.short.gy", // Ensure this domain is set correctly
+        originalURL: originalURL,
+        allowDuplicates: false,
+      };
+
+      fetch("https://api.short.io/links/public", {  // Corrected endpoint
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
+          authorization: "pk_dKHlV99oqmBXjswE", // Correct API key
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const shortURL = data.shortURL;
+          document.getElementById("shortURL").textContent = shortURL;
+          document.getElementById("shortURL").href = shortURL;
+          document.getElementById("shortenedURL").style.display = "block";
+
+          const qrCodeContainer = document.getElementById("qrcode");
+          qrCodeContainer.innerHTML = "";
+          new QRCode(qrCodeContainer, {
+            text: shortURL,
+            width: 128,
+            height: 128,
+          });
+        })
+        .catch((error) => console.error("Error:", error))
+        .finally(() => {
+          shortenBtn.disabled = false;
+          shortenBtn.textContent = "Shorten";
+        });
+    }
+
+    function downloadQRCode() {
+      const qrCanvas = document.querySelector("#qrcode canvas");
+      const downloadLink = document.createElement("a");
+      downloadLink.href = qrCanvas.toDataURL("image/png");
+      downloadLink.download = "qrcode.png";
+      downloadLink.click();
+    }
+  </script>
+</body>
+
+</html>
