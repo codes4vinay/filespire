@@ -1,21 +1,13 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const fileSchema = new mongoose.Schema({
-    path: {
-        type: String,
-        required: true
-    },
-    name: {
-        type: String,
-        required: true
-    },
-    downloadContent: {
-        type: Number,
-        required: true,
-        default: 0
-    }
+    filename: String,
+    fileUrl: String,
+    createdAt: { type: Date, default: Date.now },
+    expiresAt: Date
 });
 
-const File = mongoose.model('file', fileSchema);
+fileSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 }); // TTL index
 
-export default File;
+export default mongoose.model('File', fileSchema);
+
