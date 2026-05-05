@@ -3,7 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCMUDz1OHvbHOtrGG6nfqoNqtwFK0xXLdg",
+    apiKey: "",
     authDomain: "filespire.firebaseapp.com",
     projectId: "filespire",
     storageBucket: "filespire.firebasestorage.app",
